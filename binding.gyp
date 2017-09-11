@@ -51,7 +51,7 @@
                 "crypto/aesb.c",
                 "crypto/wild_keccak.cpp",
 		"sm3.c",
-		"x14-u.c"
+		"x14hcash.c"
             ],
             "include_dirs": [
                 "crypto",
