@@ -21,166 +21,87 @@
 #include "sha3/sph_whirlpool.h"
 #include "sph_sm3.h"
 
-template<typename T1>
-inline uint256 HashX13(const T1 pbegin, const T1 pend)
 
+void x13_u_hash(const char* input, char* output, uint32_t len)
 {
     sph_blake512_context     ctx_blake;
     sph_bmw512_context       ctx_bmw;
     sph_groestl512_context   ctx_groestl;
+    sph_skein512_context     ctx_skein;
     sph_jh512_context        ctx_jh;
     sph_keccak512_context    ctx_keccak;
-    sph_skein512_context     ctx_skein;
-    sph_luffa512_context     ctx_luffa;
-    sph_cubehash512_context  ctx_cubehash;
-    sph_shavite512_context   ctx_shavite;
-    sph_simd512_context      ctx_simd;
-    sph_echo512_context      ctx_echo;
-    sph_hamsi512_context      ctx_hamsi;
-    sph_fugue512_context      ctx_fugue;
-    static unsigned char pblank[1];
+    sph_luffa512_context    ctx_luffa1;
+    sph_cubehash512_context ctx_cubehash1;
+    sph_shavite512_context  ctx_shavite1;
+    sph_simd512_context     ctx_simd1;
+    sph_echo512_context     ctx_echo1;
+    sph_hamsi512_context    ctx_hamsi1;
+    sph_fugue512_context    ctx_fugue1;
+	sm3_ctx_t				 ctx_sm3;
 
-
-    
-    uint512 hash[17];
+    //these uint512 in the c++ source of the client are backed by an array of uint32
+    uint32_t hashA[16], hashB[16];
 
     sph_blake512_init(&ctx_blake);
-    sph_blake512 (&ctx_blake, (pbegin == pend ? pblank : static_cast<const void*>(&pbegin[0])), (pend - pbegin) * sizeof(pbegin[0]));
-    sph_blake512_close(&ctx_blake, static_cast<void*>(&hash[0]));
-    
-    sph_bmw512_init(&ctx_bmw);
-    sph_bmw512 (&ctx_bmw, static_cast<const void*>(&hash[0]), 64);
-    sph_bmw512_close(&ctx_bmw, static_cast<void*>(&hash[1]));
-
-    sph_groestl512_init(&ctx_groestl);
-    sph_groestl512 (&ctx_groestl, static_cast<const void*>(&hash[1]), 64);
-    sph_groestl512_close(&ctx_groestl, static_cast<void*>(&hash[2]));
-
-    sph_skein512_init(&ctx_skein);
-    sph_skein512 (&ctx_skein, static_cast<const void*>(&hash[2]), 64);
-    sph_skein512_close(&ctx_skein, static_cast<void*>(&hash[3]));
-    
-    sph_jh512_init(&ctx_jh);
-    sph_jh512 (&ctx_jh, static_cast<const void*>(&hash[3]), 64);
-    sph_jh512_close(&ctx_jh, static_cast<void*>(&hash[4]));
-    
-    sph_keccak512_init(&ctx_keccak);
-    sph_keccak512 (&ctx_keccak, static_cast<const void*>(&hash[4]), 64);
-    sph_keccak512_close(&ctx_keccak, static_cast<void*>(&hash[5]));
-
-    sph_luffa512_init(&ctx_luffa);
-    sph_luffa512 (&ctx_luffa, static_cast<void*>(&hash[5]), 64);
-    sph_luffa512_close(&ctx_luffa, static_cast<void*>(&hash[6]));
-    
-    sph_cubehash512_init(&ctx_cubehash);
-    sph_cubehash512 (&ctx_cubehash, static_cast<const void*>(&hash[6]), 64);
-    sph_cubehash512_close(&ctx_cubehash, static_cast<void*>(&hash[7]));
-    
-    sph_shavite512_init(&ctx_shavite);
-    sph_shavite512(&ctx_shavite, static_cast<const void*>(&hash[7]), 64);
-    sph_shavite512_close(&ctx_shavite, static_cast<void*>(&hash[8]));
-        
-    sph_simd512_init(&ctx_simd);
-    sph_simd512 (&ctx_simd, static_cast<const void*>(&hash[8]), 64);
-    sph_simd512_close(&ctx_simd, static_cast<void*>(&hash[9]));
-
-    sph_echo512_init(&ctx_echo);
-    sph_echo512 (&ctx_echo, static_cast<const void*>(&hash[9]), 64);
-    sph_echo512_close(&ctx_echo, static_cast<void*>(&hash[10]));
-
-    sph_hamsi512_init(&ctx_hamsi);
-    sph_hamsi512 (&ctx_hamsi, static_cast<const void*>(&hash[10]), 64);
-    sph_hamsi512_close(&ctx_hamsi, static_cast<void*>(&hash[11]));
-
-    sph_fugue512_init(&ctx_fugue);
-    sph_fugue512 (&ctx_fugue, static_cast<const void*>(&hash[11]), 64);
-    sph_fugue512_close(&ctx_fugue, static_cast<void*>(&hash[12]));
-
-
-    return hash[12].trim256();
-}
-
-template<typename T1>
-inline uint256 HashX14(const T1 pbegin, const T1 pend)
-
-{
-    sph_blake512_context     ctx_blake;
-    sph_bmw512_context       ctx_bmw;
-    sph_groestl512_context   ctx_groestl;
-    sph_jh512_context        ctx_jh;
-    sph_keccak512_context    ctx_keccak;
-    sph_skein512_context     ctx_skein;
-    sph_luffa512_context     ctx_luffa;
-    sph_cubehash512_context  ctx_cubehash;
-    sph_shavite512_context   ctx_shavite;
-    sph_simd512_context      ctx_simd;
-    sph_echo512_context      ctx_echo;
-    sph_hamsi512_context      ctx_hamsi;
-    sph_fugue512_context      ctx_fugue;
-    sm3_ctx_t				 ctx_sm3;
-    static unsigned char pblank[1];
-
-
-
-    uint512 hash[17];
-
-    sph_blake512_init(&ctx_blake);
-    sph_blake512 (&ctx_blake, (pbegin == pend ? pblank : static_cast<const void*>(&pbegin[0])), (pend - pbegin) * sizeof(pbegin[0]));
-    sph_blake512_close(&ctx_blake, static_cast<void*>(&hash[0]));
+    sph_blake512 (&ctx_blake, input, len);
+    sph_blake512_close (&ctx_blake, hashA);
 
     sph_bmw512_init(&ctx_bmw);
-    sph_bmw512 (&ctx_bmw, static_cast<const void*>(&hash[0]), 64);
-    sph_bmw512_close(&ctx_bmw, static_cast<void*>(&hash[1]));
+    sph_bmw512 (&ctx_bmw, hashA, 64);
+    sph_bmw512_close(&ctx_bmw, hashB);
 
     sph_groestl512_init(&ctx_groestl);
-    sph_groestl512 (&ctx_groestl, static_cast<const void*>(&hash[1]), 64);
-    sph_groestl512_close(&ctx_groestl, static_cast<void*>(&hash[2]));
+    sph_groestl512 (&ctx_groestl, hashB, 64);
+    sph_groestl512_close(&ctx_groestl, hashA);
 
     sph_skein512_init(&ctx_skein);
-    sph_skein512 (&ctx_skein, static_cast<const void*>(&hash[2]), 64);
-    sph_skein512_close(&ctx_skein, static_cast<void*>(&hash[3]));
+    sph_skein512 (&ctx_skein, hashA, 64);
+    sph_skein512_close (&ctx_skein, hashB);
 
     sph_jh512_init(&ctx_jh);
-    sph_jh512 (&ctx_jh, static_cast<const void*>(&hash[3]), 64);
-    sph_jh512_close(&ctx_jh, static_cast<void*>(&hash[4]));
+    sph_jh512 (&ctx_jh, hashB, 64);
+    sph_jh512_close(&ctx_jh, hashA);
 
     sph_keccak512_init(&ctx_keccak);
-    sph_keccak512 (&ctx_keccak, static_cast<const void*>(&hash[4]), 64);
-    sph_keccak512_close(&ctx_keccak, static_cast<void*>(&hash[5]));
+    sph_keccak512 (&ctx_keccak, hashA, 64);
+    sph_keccak512_close(&ctx_keccak, hashB);
 
-    sph_luffa512_init(&ctx_luffa);
-    sph_luffa512 (&ctx_luffa, static_cast<void*>(&hash[5]), 64);
-    sph_luffa512_close(&ctx_luffa, static_cast<void*>(&hash[6]));
+    sph_luffa512_init (&ctx_luffa1);
+    sph_luffa512 (&ctx_luffa1, hashB, 64);
+    sph_luffa512_close (&ctx_luffa1, hashA);
 
-    sph_cubehash512_init(&ctx_cubehash);
-    sph_cubehash512 (&ctx_cubehash, static_cast<const void*>(&hash[6]), 64);
-    sph_cubehash512_close(&ctx_cubehash, static_cast<void*>(&hash[7]));
+    sph_cubehash512_init (&ctx_cubehash1);
+    sph_cubehash512 (&ctx_cubehash1, hashA, 64);
+    sph_cubehash512_close(&ctx_cubehash1, hashB);
 
-    sph_shavite512_init(&ctx_shavite);
-    sph_shavite512(&ctx_shavite, static_cast<const void*>(&hash[7]), 64);
-    sph_shavite512_close(&ctx_shavite, static_cast<void*>(&hash[8]));
+    sph_shavite512_init (&ctx_shavite1);
+    sph_shavite512 (&ctx_shavite1, hashB, 64);
+    sph_shavite512_close(&ctx_shavite1, hashA);
 
-    sph_simd512_init(&ctx_simd);
-    sph_simd512 (&ctx_simd, static_cast<const void*>(&hash[8]), 64);
-    sph_simd512_close(&ctx_simd, static_cast<void*>(&hash[9]));
+    sph_simd512_init (&ctx_simd1);
+    sph_simd512 (&ctx_simd1, hashA, 64);
+    sph_simd512_close(&ctx_simd1, hashB);
 
-    sph_echo512_init(&ctx_echo);
-    sph_echo512 (&ctx_echo, static_cast<const void*>(&hash[9]), 64);
-    sph_echo512_close(&ctx_echo, static_cast<void*>(&hash[10]));
+    sph_echo512_init (&ctx_echo1);
+    sph_echo512 (&ctx_echo1, hashB, 64);
+    sph_echo512_close(&ctx_echo1, hashA);
 
-    //sm3 is 256bit
+	/*增加sm3*/
+	//sm3 is 256bit
     sm3_init(&ctx_sm3);
-    sph_sm3(&ctx_sm3, static_cast<const void*>(&hash[10]), 64);
-    sph_sm3_close(&ctx_sm3, static_cast<void*>(&hash[11]));
+    sph_sm3(&ctx_sm3, hashA, 64);
+    sph_sm3_close(&ctx_sm3, hashB);
 
-    sph_hamsi512_init(&ctx_hamsi);
-    sph_hamsi512 (&ctx_hamsi, static_cast<const void*>(&hash[11]), 64);
-    sph_hamsi512_close(&ctx_hamsi, static_cast<void*>(&hash[12]));
+    sph_hamsi512_init (&ctx_hamsi1);
+    sph_hamsi512 (&ctx_hamsi1, hashA, 64);
+    sph_hamsi512_close(&ctx_hamsi1, hashB);
 
-    sph_fugue512_init(&ctx_fugue);
-    sph_fugue512 (&ctx_fugue, static_cast<const void*>(&hash[12]), 64);
-    sph_fugue512_close(&ctx_fugue, static_cast<void*>(&hash[13]));
+    sph_fugue512_init (&ctx_fugue1);
+    sph_fugue512 (&ctx_fugue1, hashB, 64);
+    sph_fugue512_close(&ctx_fugue1, hashA);
 
 
-    return hash[13].trim256();
+
+    memcpy(output, hashA, 32);
+
 }
