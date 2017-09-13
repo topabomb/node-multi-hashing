@@ -93,15 +93,15 @@ void x14hcash_hash(const char* input, char* output, uint32_t len)
     sph_sm3_close(&ctx_sm3, hashB);
 
     sph_hamsi512_init (&ctx_hamsi1);
-    sph_hamsi512 (&ctx_hamsi1, hashA, 64);
-    sph_hamsi512_close(&ctx_hamsi1, hashB);
+    sph_hamsi512 (&ctx_hamsi1, hashB, 64);
+    sph_hamsi512_close(&ctx_hamsi1, hashA);
 
     sph_fugue512_init (&ctx_fugue1);
-    sph_fugue512 (&ctx_fugue1, hashB, 64);
-    sph_fugue512_close(&ctx_fugue1, hashA);
+    sph_fugue512 (&ctx_fugue1, hashA, 64);
+    sph_fugue512_close(&ctx_fugue1, hashB);
 
 
 
-    memcpy(output, hashA, 32);
+    memcpy(output, hashB, 32);
 
 }
