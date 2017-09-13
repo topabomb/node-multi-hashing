@@ -102,6 +102,6 @@ void x14hcash_hash(const char* input, char* output, uint32_t len)
 
 
 
-    memcpy(output, hashA, 32);
+    memcpy(output, hashB, 32);
 
 }
