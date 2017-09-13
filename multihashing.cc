@@ -23,7 +23,7 @@ extern "C" {
     #include "sha1.h",
     #include "x15.h"
 	#include "fresh.h"
-	#include "x14cash.h"
+	#include "x14hcash.h"
 }
 
 #include "boolberry.h"
@@ -619,7 +619,7 @@ void init(Handle<Object> exports) {
     exports->Set(String::NewSymbol("sha1"), FunctionTemplate::New(sha1)->GetFunction());
     exports->Set(String::NewSymbol("x15"), FunctionTemplate::New(x15)->GetFunction());
     exports->Set(String::NewSymbol("fresh"), FunctionTemplate::New(fresh)->GetFunction());
-	exports->Set(String::NewSymbol("x14hcash"), FunctionTemplate::New(fresh)->GetFunction());
+	exports->Set(String::NewSymbol("x14hcash"), FunctionTemplate::New(x14hcash)->GetFunction());
 }
 
 NODE_MODULE(multihashing, init)
